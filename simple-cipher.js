@@ -5,6 +5,9 @@
 export class Cipher {
 constructor(entry) {
   this.key = entry;
+  this.state = {
+    abc: ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+  } 
 }
 
 get key() {
@@ -25,15 +28,12 @@ set key(entry){
   }
 }
 
-  encode(entry) {
-    const activeKey = this.key
-    console.log(activeKey)
-    const plain = entry.split('')
-    const abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
-    const alteration = [];
-    const encoded = [];
-    let Key = activeKey.split('');
-    for(let a = 0; alteration.length < plain.length; a++){
+  getAlteration(entry){
+   const alteration = []
+   const abc = this.state.abc
+   const plain = entry.split('')
+    let Key = this.key.split('');
+    for(let a = 0; alteration.length < plain.length || alteration.length < 100; a++){
       for(let i = 0; i < Key.length; i++){
         for(let i2 = 0; i2 < abc.length; i2++){
           if(Key[i] === abc[i2]){
@@ -42,7 +42,14 @@ set key(entry){
         }
       }
     }
-      //console.log(alteration)
+    return alteration
+  }
+
+  encode(entry) {
+    const plain = entry.split('')
+    const abc = this.state.abc
+    const alteration = this.getAlteration(entry)
+    const encoded = [];
     for(let i = 0; i < plain.length; i++){
       for(let i2 = 0; i2 < abc.length; i2++){
         if(plain[i] === abc[i2]){
@@ -55,27 +62,14 @@ set key(entry){
           }
         }
       }
-      //console.log(encoded.join('').replace(/[^a-z]+/g, ''))
       return encoded.join('').replace(/[^a-z]+/g, '')
     }
 
   decode(entry) {
-    const activeKey = this.key;
-    const alteration = []
+    const alteration = this.getAlteration(entry)
     const decoded = []
-    const abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+    const abc = this.state.abc
     const encoded = entry.split('');
-    let Key = activeKey.split('');
-    for(let a = 0; alteration.length < encoded.length; a++){  
-    for(let i = 0; i < Key.length; i++){
-        for(let i2 = 0; i2 < abc.length; i2++){
-          if(Key[i] === abc[i2]){
-            alteration.push(i2)
-          }
-        }
-      }
-    }
-
       for(let i = 0; i < encoded.length; i++){
         for(let i2 = 0; i2 < abc.length; i2++){
           if(encoded[i] === abc[i2]){
@@ -85,11 +79,9 @@ set key(entry){
                 }else{
                 decoded.push(abc[x])
               }
-
             }
           }
         }
         return decoded.join('').replace(/[^a-z]+/g, '')
   }
-  
 }
